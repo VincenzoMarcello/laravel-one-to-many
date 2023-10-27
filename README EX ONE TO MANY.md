@@ -17,6 +17,8 @@ I task da svolgere sono diversi, ma alcuni di essi sono un ripasso di ciò che a
 
 # SVOLGIMENTO
 
+## CREAZIONE TABELLA types CON Migration e seeder
+
 -   Innazitutto ci dobbiamo creare la nuova tabella _types_ quindi il model e la migration e il seeder per popolarla:
 
 ```
@@ -24,6 +26,8 @@ php artisan make:model Type -ms
 
 Così in un colpo solo ci creiamo model,migration e seeder
 ```
+
+## MIGRATION
 
 -   poi andiamo in migrations\create_types_table.php e ci creiamo le colonne della tabella:
 
@@ -100,3 +104,79 @@ php artisan migrate
 ```
 
 -   possiamo provare a fare un reset o un refresh per vedere se funziona tutto senza errori
+
+## SEEDER
+
+-   ora dobbiamo fare il seeder andiamo in seeders e apriamo il TypeSeeder:
+
+```php
+// # CI IMPORTIAMO IL MODELLO TYPE
+use App\Models\Type;
+
+// # CI IMPORTIAMO FAKER
+use Faker\Generator as Faker;
+```
+
+```php
+   public function run(Faker $faker)
+    {
+        // # CI CREIAMO UNA VARIABILE CHE CONTIENE UN ARRAY DI TYPE
+        $_types = [
+            "Front-end",
+            "Back-end",
+            "Full Stack"
+        ];
+
+        // # FACCIAMO UN CICLO E PER OGNI ELEMENTO DEL DB:
+        foreach ($_types as $_type) {
+            // # ABBIAMO UN OGGETTO TYPE
+            $type = new Type();
+            // # CHE CONTERRA' UNA LABEL CHE CONTIENE L'ARRAY DI TYPE
+            $type->label = $_type;
+            // # E UN COLORE GENERATO CASUALMENTE IN ESADECIMALE DA FAKER
+            $type->color = $faker->hexColor();
+            // # SALVIAMO NEL DB
+            $type->save();
+        }
+    }
+```
+
+-   aggiungiamo al DatabaseSeeder.php anche:
+
+```php
+ $this->call([
+            TypeSeeder::class, <-----
+            ProjectSeeder::class,
+            UserSeeder::class
+        ]);
+
+in maniera tale che quando facciamo il seed verrà eseguito anche TypeSeeder
+```
+
+-   ora in ProjectSeeder.php:
+
+```php
+// # CI IMPORTIAMO IL MODELLO TYPE
+use App\Models\Type;
+```
+
+```php
+public function run(Faker $faker)
+    {
+        // # CI FACCIAMO UN VARIABILE CHE PRENDE TUTTI GLI OGGETTI TYPE E CON IL pluck('id)
+        // # ANDIAMO A PRENDERE TUTTI GLI ID NEL TYPE QUINDI SI CREERA' UN ARRAY DI ID
+        $type_ids = Type::all()->pluck('id');
+        // # SICCOME VOGLIAMO ANCHE DEI VALORI NULL ANDIAMO AD AGGIUNGERE ALL'ARRAY DI ID
+        // # ANCHE UN VALORE NULL [1,2,3,..,null]
+        $type_ids[] = null;
+
+        for ($i = 0; $i < 50; $i++) {
+            $project = new Project();
+            // # CON IL METODO randomElement($type_ids) di FAKER CI ANDIAMO A PRENDERE DEGLI ID
+            // # CASUALI DALL'ARRAY DI ID
+            $project->type_id = $faker->randomElement($type_ids);
+            ......
+        }}
+```
+
+-   ora facciamo un refresh --seed
