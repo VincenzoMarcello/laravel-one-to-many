@@ -18,6 +18,8 @@
         <tr>
           <th scope="col">ID</th>
           <th scope="col">Nome</th>
+          {{-- ! AGGIUNGIAMO UN COLONNA TIPO PER IL TYPE --}}
+          <th scope="col">Tipo</th>
           <th scope="col">Descrizione</th>
           <th scope="col">Link</th>
           <th scope="col"></th>
@@ -29,6 +31,8 @@
           <tr>
             <th scope="row">{{ $project->id }}</th>
             <td>{{ $project->name }}</td>
+            {{-- ! USIAMO IL METODO CHE ABBIAMO FATTO ANCHE PER LA SHOW --}}
+            <td>{!! $project->getTypeBadge() !!}</td>
             <td>{{ $project->description }}</td>
             <td>{{ $project->link }}</td>
 

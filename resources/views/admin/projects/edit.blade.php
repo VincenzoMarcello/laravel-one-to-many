@@ -25,7 +25,7 @@
         <div class="col-12">
           <label for="link" class="form-label">Link</label>
           <input class="form-control @error('link') is-invalid @enderror" type="url" id="link" name="link"
-            value="{{ old('link') ?? $project->link }}">>
+            value="{{ old('link') ?? $project->link }}">
 
           @error('link')
             <div class="invalid-feedback">{{ $message }}</div>

@@ -180,3 +180,98 @@ public function run(Faker $faker)
 ```
 
 -   ora facciamo un refresh --seed
+
+# STAMPARE A SCHERMO LE RELAZIONE
+
+-   ora proviamo a stamparla la relazione
+
+## MODEL
+
+-   prima cosa da fare e andare nei Models e aggiungere le funzioni belongsTo() e hasMany()
+    in quanto abbiamo una relazione one to many un type che ha molti projects ma un project ha solo un type:
+
+-   andiamo in Project nei Models:
+
+```php
+  // # QUI STIAMO FACENDO UN PUBLIC FUNCTION CHE DICE CHE UN PROJECT HA UN SOLO TYPE
+    public function type()
+    {
+        // # PER QUESTO INTENDIAMO PROJECT E TRADOTTO
+        // # 'PROJECT'->'APPARTIENE A'('TYPE')
+        return $this->belongsTo(Type::class);
+
+        // # QUINDI ORA DA PROJECT POSSIAMO ACCEDERE A TYPE
+    }
+```
+
+-   ora facciamo il contrario sul Models Type:
+
+```php
+ // # QUI STIAMO FACENDO UN PUBLIC FUNCTION CHE DICE CHE UN TYPE HA MOLTI PROJECT
+    // ! QUINDI METTIAMO PROJECTS AL PLURALE
+    public function projects()
+    {
+        // # PER QUESTO INTENDIAMO TYPE E TRADOTTO
+        // # 'TYPE'->'HA MOLTI'('PROJECT')
+        return $this->hasMany(Project::class);
+
+        // # QUESTO METODO PROJECTS CI RESTITUIRA' UN ARRAY
+    }
+
+```
+
+-   proviamo a stampare nella views show:
+
+```html
+<div class="col-4">
+    <p>
+        <!-- QUI STAMPIAMO LA LABEL DEL TYPE CHE ABBIAMO COLLEGATO TRAMITE
+        RELAZIONE  USIAMO IL '?' CHE E' IL NULL OPERATOR IN MANIERA
+        TALE CHE SE CAPITA SENZA TYPE NON DARA' ERRORE MA DARA' IL
+        CAMPO VUOTO, POI PER FARE UNA COSA MIGLIORE POSSIAMO FARE UNA FUNZIONE
+        GETTER CHE METTE TIPO UNTYPE O QUELLO CHE VOGLIAMO NOI -->
+        <strong>Type:</strong><br />
+        {{ $project->type?->label }}
+    </p>
+</div>
+```
+
+-   proviamo a fare un getter per fare le cose più carine andiamo in Models Project:
+
+```php
+public function getTypeBadge()
+    {
+        // # FACCIAMO UN TERNARIO CHE DICE CHE SE CI STA UN TIPO ALLORA STAMPIAMO UN BADGE
+        // # CON IL COLORE PRESO DA TYPE E LA LABEL PRESA DA TYPE
+        // # SE IL TYPE é NULL ALLORA STAMPIAMO UNTYPE
+        // return $this->type ? "<span class='badge' style='background-color:{$this->type->color}'>{$this->type->label}</span>" : 'Untype';
+
+        // # PERSONALIZZIAMO ANCHE L'UNTYPE
+        return $this->type ? "<span class='badge' style='background-color:{$this->type->color}'>{$this->type->label}</span>" : "<span class='badge text-bg-danger'>Untype</span>";
+    }
+```
+
+-   proviamo a stampare nella views show con il metodo apposto di quello di prima:
+
+```html
+<div class="col-4">
+    <p>
+        <!--I DOPPI PUNTI !! SONO PER STAMPARE L'HTML DEL TERNARIO ALTRIMENTI
+        STAMPEREBBE L'HTML LETTERALMENTE -->
+        <strong>Type:</strong><br />
+        {!! $project->getTypeBadge() !!}
+    </p>
+</div>
+```
+
+-   stampiamo anche nell'index:
+
+```html
+<!-- AGGIUNGIAMO UN COLONNA TIPO PER IL TYPE -->
+......
+<th scope="col">Tipo</th>
+.....
+<!-- ! USIAMO IL METODO CHE ABBIAMO FATTO ANCHE PER LA SHOW -->
+<td>{!! $project->getTypeBadge() !!}</td>
+.....
+```
