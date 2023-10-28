@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 // # IMPORTIAMO IL MODEL Project 
 use App\Models\Project;
 
+// # IMPORTIAMO IL MODEL Type
+use App\Models\Type;
+
 // ! PER LA VALIDAZIONE IMPORTO IL VALIDATOR
 use Illuminate\Support\Facades\Validator;
 
@@ -43,7 +46,10 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('admin.projects.create');
+        // # PASSEREMO AL CREATE TUTTI GLI ELEMENTI DI TYPE TRAMITE IL COMPACT E LA FUNZIONE ALL()
+        // # PRIMA PERò CI IMPORTIAMO IL MODEL TYPE
+        $types = Type::all();
+        return view('admin.projects.create', compact('types'));
     }
 
     /**
@@ -148,6 +154,9 @@ class ProjectController extends Controller
                 'name' => 'required|string|max:20',
                 "description" => "required|string",
                 "link" => "required|string",
+                // # QUI STIAMO DICENDO CHE PUO ESSERE NULLO E CHE IL TYPE DEVE ESISTERE NEL CAMPO DELL'ID
+                // # QUINDI SE ABBIAMO 10 ID E METTIAMO 12 CI DARA' ERRORE
+                "type_id" => "nullable|integer|exists:types,id"
             ],
             [
                 'name.required' => 'Il nome è obbligatorio',
@@ -159,6 +168,9 @@ class ProjectController extends Controller
 
                 'link.required' => 'Il link è obbligatorio',
                 'link.string' => 'Il tipo deve essere una stringa',
+                // # QUI METTIAMO IL MESSAGGIO DELL'ERRORE 
+                'type_id.exists' => 'Il tipo inserito non è valido',
+
             ]
         )->validate();
 

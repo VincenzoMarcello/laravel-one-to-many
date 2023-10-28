@@ -12,7 +12,8 @@ class Project extends Model
     protected $fillable = [
         "name",
         "link",
-        "description"
+        "description",
+        "type_id"
     ];
 
     // # QUI STIAMO FACENDO UN PUBLIC FUNCTION CHE DICE CHE UN PROJECT HA UN SOLO TYPE

@@ -275,3 +275,90 @@ public function getTypeBadge()
 <td>{!! $project->getTypeBadge() !!}</td>
 .....
 ```
+
+-   ora facciamo un select nel create per aggiungere un type a un nuovo project:
+
+```php
+// # IMPORTIAMO IL MODEL Type
+use App\Models\Type;
+
+public function create()
+    {
+        // # PASSEREMO AL CREATE TUTTI GLI ELEMENTI DI TYPE TRAMITE IL COMPACT E LA FUNZIONE ALL()
+        $types = Type::all();
+        return view('admin.projects.create', compact('types'));
+    }
+```
+
+-   ora anggiungiamo il type_id al fillable nel Model Project:
+
+```php
+ protected $fillable = [
+        "name",
+        "link",
+        "description",
+        "type_id" <---
+    ];
+```
+
+-   aggiungiamo la validazione nel resource controller:
+
+```php
+ private function validation($data)
+    {
+        $validator = Validator::make(
+            $data,
+            [
+                'name' => 'required|string|max:20',
+                "description" => "required|string",
+                "link" => "required|string",
+                // # QUI STIAMO DICENDO CHE PUO ESSERE NULLO E CHE IL TYPE DEVE ESISTERE NEL CAMPO DELL'ID
+                // # QUINDI SE ABBIAMO 10 ID E METTIAMO 12 CI DARA' ERRORE
+                "type_id" => "nullable|integer|exists:types,id" <-----
+            ],
+            [
+                'name.required' => 'Il nome è obbligatorio',
+                'name.string' => 'Il nome deve essere una stringa',
+                'name.max' => 'Il nome deve massimo di 20 caratteri',
+
+                'description.required' => 'La descrizione è obbligatorio',
+                'description.string' => 'La descrizione deve essere una stringa',
+
+                'link.required' => 'Il link è obbligatorio',
+                'link.string' => 'Il tipo deve essere una stringa',
+                // # QUI METTIAMO IL MESSAGGIO DELL'ERRORE
+                'type_id.exists' => 'Il tipo inserito non è valido', <-----
+
+            ]
+        )->validate();
+
+        return $validator;
+    }
+```
+
+-   Ora siamo pronti a fare la select perchè abbiamo tutti i pezzi:
+
+```html
+<!-- FACCIAMO UNA SELECT PER SCEGLIERE IL TIPO USEREMO LA CHIAVE SECONDARIA -->
+<div class="col-12">
+    <label for="type_id" class="form-label">Tipo</label>
+    <select
+        name="type_id"
+        id="type_id"
+        class="form-select @error('type_id') is-invalid @enderror"
+    >
+        Seleziona un Tipo
+        <option value="">Nessun Tipo</option>
+        <!-- QUI FACCIAMO UN CICLO CON GLI ELEMENTI CHE CI ARRIVANO DAL CREATE DEL ProjectController -->
+        @foreach ($types as $type)
+        <option value="{{ $type->id }}">{{ $type->label }}</option>
+        @endforeach
+    </select>
+
+    @error('type_id')
+    <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+```
+
+-   vai nel create per approfondire.
