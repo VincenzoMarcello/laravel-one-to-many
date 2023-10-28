@@ -236,6 +236,8 @@ public function run(Faker $faker)
 </div>
 ```
 
+# STAMPA DI BADGE CON IL TYPE NELLO SHOW
+
 -   proviamo a fare un getter per fare le cose più carine andiamo in Models Project:
 
 ```php
@@ -264,6 +266,8 @@ public function getTypeBadge()
 </div>
 ```
 
+# STAMPA DI BADGE CON IL TYPE NEL' INDEX
+
 -   stampiamo anche nell'index:
 
 ```html
@@ -275,6 +279,8 @@ public function getTypeBadge()
 <td>{!! $project->getTypeBadge() !!}</td>
 .....
 ```
+
+# COME SELEZIONARE IL BADGE CON IL TYPE NEL CREATE
 
 -   ora facciamo un select nel create per aggiungere un type a un nuovo project:
 
@@ -362,3 +368,38 @@ public function create()
 ```
 
 -   vai nel create per approfondire.
+
+# COME MODIFICARE IL BADGE CON IL TYPE DI UN PROGETTO ESISTENTE
+
+-   andiamo nell'edit:
+
+```php
+ public function edit(Project $project)
+    {
+        // # FACCIAMO COME ABBIAMO FATTO NEL CREATE E PASSIAMO IL TYPES NEL COMPACT
+        $types = Type::all(); <----
+        return view('admin.projects.edit', compact('project','types'));
+    }
+```
+
+-   ora possiamo usare la stessa select del create anche nel edit:
+
+```php
+    <div class="col-12">
+             <label for="type_id" class="form-label">Tipo</label>
+             <select name="type_id" id="type_id" class="form-select @error('type_id') is-invalid @enderror">Seleziona un
+               Tipo
+               <option value="">Nessun Tipo</option>
+               <option value="100" @if (old('type_id') == '100') selected @endif>Non Valido</option>
+            // CAMBIANDO PERò QUESTA PARTE DI CODICE
+               @foreach ($types as $type)
+                 <option value="{{ $type->id }}" @if (old('type_id') && $type->type && old('type_id') == $type->type->id) selected @endif>{{ $type->label }}
+                 </option>
+               @endforeach
+             </select>
+
+             @error('type_id')
+               <div class="invalid-feedback">{{ $message }}</div>
+             @enderror
+           </div>
+```

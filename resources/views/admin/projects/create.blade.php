@@ -26,10 +26,10 @@
           <select name="type_id" id="type_id" class="form-select @error('type_id') is-invalid @enderror">Seleziona un
             Tipo
             <option value="">Nessun Tipo</option>
-            <option value="100" @if (old('type->id') == '100') selected @endif>Non Valido</option>
+            <option value="100" @if (old('type_id') == '100') selected @endif>Non Valido</option>
             {{-- ! QUI FACCIAMO UN CICLO CON GLI ELEMENTI CHE CI ARRIVANO DAL CREATE DEL ProjectController --}}
             @foreach ($types as $type)
-              <option value="{{ $type->id }}" @if (old('type->id') == $type->id) selected @endif>{{ $type->label }}
+              <option value="{{ $type->id }}" @if (old('type_id') == $type->id) selected @endif>{{ $type->label }}
               </option>
             @endforeach
           </select>

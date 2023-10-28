@@ -107,7 +107,9 @@ class ProjectController extends Controller
         // # FACENDO LA Dependency injection QUINDI METTENDO Project $project INVECE DI $ID
         // # CI RISPARMIAMO LA RIGA SOTTO
         // $projects = Project::findOrFail($id);
-        return view('admin.projects.edit', compact('project'));
+        // # FACCIAMO COME ABBIAMO FATTO NEL CREATE
+        $types = Type::all();
+        return view('admin.projects.edit', compact('project', 'types'));
     }
 
     /**

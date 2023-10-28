@@ -23,6 +23,23 @@
         </div>
 
         <div class="col-12">
+          <label for="type_id" class="form-label">Tipo</label>
+          <select name="type_id" id="type_id" class="form-select @error('type_id') is-invalid @enderror">Seleziona un
+            Tipo
+            <option value="">Nessun Tipo</option>
+            <option value="100" @if (old('type_id') == '100') selected @endif>Non Valido</option>
+            @foreach ($types as $type)
+              <option value="{{ $type->id }}" @if (old('type_id') && $type->type && old('type_id') == $type->type->id) selected @endif>{{ $type->label }}
+              </option>
+            @endforeach
+          </select>
+
+          @error('type_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
+
+        <div class="col-12">
           <label for="link" class="form-label">Link</label>
           <input class="form-control @error('link') is-invalid @enderror" type="url" id="link" name="link"
             value="{{ old('link') ?? $project->link }}">
